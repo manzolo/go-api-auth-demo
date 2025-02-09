@@ -1,0 +1,43 @@
+services:
+  # My Service description
+  go-api:
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: ${CONTAINER_NAME}
+    environment:
+      # host UID/GID mapping
+      - PUID=${UID:-1000}
+      - PGID=${GID:-1000}
+    restart: ${RESTART_POLICY}
+
+    secrets:
+      - my_jwt_secret
+      - basic_auth_username
+      - basic_auth_password
+      - my_api_key
+      - my_token
+    #volumes:
+    #  - ./data:/data
+    ports:
+      # Host Port : Container Port
+      - 8080:8080
+    healthcheck:
+      #disable: true
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/public"]
+      interval: 90s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+secrets:
+  my_jwt_secret:
+    file: ./secrets/my_jwt_secret.txt
+    #/run/secrets/my_jwt_secret inside container
+  basic_auth_username:
+    file: ./secrets/basic_auth_username.txt
+  basic_auth_password:
+    file: ./secrets/basic_auth_password.txt
+  my_api_key:
+    file: ./secrets/my_api_key.txt
+  my_token:
+    file: ./secrets/my_token.txt
+    
